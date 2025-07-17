@@ -10,7 +10,6 @@ form.addEventListener('submit', function (event) {
     const password = document.getElementById('password').value
     const password2 = document.getElementById('password2').value
 
-
     if (!username || !email || !password || !password2) {
         resultDiv.textContent = 'Заповніть усі поля!';
     } else if (password.length < 6) {
@@ -18,9 +17,10 @@ form.addEventListener('submit', function (event) {
     } else if (password !== password2) {
         resultDiv.textContent = 'Паролі не співпадають.';
     } else if (email.match((/^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/))) {
-        emailValid.
+        emailValid.textContent = ''
         resultDiv.textContent = `Реєстрація успішна! Ваш нікнейм: ${username}, email: ${email}`;
     } else {
-        emailValid.textContent = 'Введіть коректний email'
+        emailValid.textContent = 'Введіть коректний email!'
+        resultDiv.textContent = ''
     }
 })
