@@ -2,6 +2,17 @@
 <html lang="ua">
 <head>
     <meta charset="UTF-8">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+        }
+    </style>
     <title>My Projects</title>
 </head>
 <body>
@@ -19,20 +30,22 @@
     <h1>Мої проєкти</h1>
     <h2>Форма реєстрації</h2>
     <form id="registerForm" novalidate>
-        <label for="username">Username</label><br>
-        <input type="text" id="username" name="username"/><br /><br />
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username"/>
 
-        <label for="email">Email</label><br>
-        <input type="email" id="email" name="email"/><br /><br />
-        <div id="emailValidation"></div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email"/>
+        <div id="emailError" class="error"></div>
 
-        <label for="password">Password</label><br>
-        <input type="password" id="password" name="password"/><br /><br />
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"/>
 
-        <label for="password2">Repeat password</label><br>
-        <input type="password" id="password2" name="password2"/><br /><br />
+        <label for="password2">Repeat password</label>
+        <input type="password" id="password2" name="password2"/>
+        <div id="passwordError" class="error"></div>
 
         <button id="submitBtn">Надіслати</button>
+        <div id="fieldsError" class="error"></div>
     </form>
     <div id="result"></div>
     <script src="reg_form.js"></script>

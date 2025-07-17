@@ -1,26 +1,44 @@
 const form = document.getElementById('registerForm')
 const resultDiv = document.getElementById('result')
-const emailValid = document.getElementById('emailValidation')
-
+const emailError = document.getElementById('emailError')
+const passwordError = document.getElementById('passwordError')
+const fieldsError = document.getElementById('fieldsError')
+const username = document.getElementById('username')
+const email = document.getElementById('email')
+const password = document.getElementById('password')
+const password2 = document.getElementById('password2')
 form.addEventListener('submit', function (event) {
     event.preventDefault()
+    let emailCheck = false
+    let passwordCheck = false
+    let fieldsCheck = false
 
-    const username = document.getElementById('username').value
-    const email = document.getElementById('email').value
-    const password = document.getElementById('password').value
-    const password2 = document.getElementById('password2').value
-
-    if (!username || !email || !password || !password2) {
-        resultDiv.textContent = 'Заповніть усі поля!';
-    } else if (password.length < 6) {
-        resultDiv.textContent = 'Пароль має містити щонайменше 6 символів.';
-    } else if (password !== password2) {
-        resultDiv.textContent = 'Паролі не співпадають.';
-    } else if (email.match((/^[A-Za-z\._\-0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/))) {
-        emailValid.textContent = ''
-        resultDiv.textContent = `Реєстрація успішна! Ваш нікнейм: ${username}, email: ${email}`;
+    if (!username.value || !email.value || !password.value || !password2.value) {
+        fieldsError.textContent = 'All fields are required.'
     } else {
-        emailValid.textContent = 'Введіть коректний email!'
+        fieldsError.textContent = ''
+        fieldsCheck = true
+    }
+
+    if (password.value.length < 6) {
+        passwordError.textContent = 'Password must be at least 6 characters long.'
+    } else if (password.value !== password2.value) {
+            passwordError.textContent = 'The passwords do not match.'
+    } else {
+        passwordError.textContent = ''
+        passwordCheck = true
+    }
+
+    if (!email.value.match((/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/))) {
+        emailError.textContent = 'Please enter a valid email!'
+    } else {
+        emailError.textContent = ''
+        emailCheck = true
+    }
+
+    if (emailCheck && passwordCheck && fieldsCheck) {
+        resultDiv.textContent = `Registration successful! Your nickname: ${username.value}, email: ${email.value}`;
+    } else {
         resultDiv.textContent = ''
     }
 })
