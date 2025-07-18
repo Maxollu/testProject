@@ -1,16 +1,17 @@
-import express, {request, response} from 'express'
+import express from 'express'
+import cors from 'cors'
 
 const app = express()
+app.use(cors())
+
+app.use(express.json())
+
 const PORT = process.env.PORT || 3000
 
-const mockUsers = [
+let mockUsers = [
     {id: 1, username: "maxollu", displayName: "Maxollu"},
     {id: 2, username: "lirika", displayName: "LiRiKa"},
     {id: 3, username: "sl1kers", displayName: "Sl1kers"},
-    {id: 4, username: "niger", displayName: "Niger"},
-    {id: 5, username: "hitler", displayName: "Hitler"},
-    {id: 6, username: "adolf", displayName: "Adolf"},
-    {id: 7, username: "luftwaffe", displayName: "Luftwaffe"},
 ]
 
 app.get("/", (request, response) => {
@@ -26,6 +27,27 @@ app.get("/api/users", (request, response) => {
     return response.send(mockUsers)
 })
 
+app.post('/api/users', (request, response) => {
+    console.log('BODY: ', request.body)
+
+    const {username, email, password } = request.body
+
+    if (!username || !email || !password) {
+        return response.status(400).send({msg: 'Missing required fields' })
+    }
+
+    const newUser = {
+        id: mockUsers.length + 1,
+        username,
+        displayName: username
+    }
+
+    mockUsers.push(newUser)
+
+    console.log('New user added: ', newUser)
+    return response.status(201).send(newUser)
+})
+
 app.get('/api/users/:id', (request, response) => {
     console.log(request.params)
     const parsedId = parseInt(request.params.id)
@@ -35,10 +57,6 @@ app.get('/api/users/:id', (request, response) => {
     const findUser = mockUsers.find((user) => user.id === parsedId)
     if(!findUser) return  response.sendStatus(404)
     return response.send(findUser)
-})
-
-app.get('/api/products', (request, response) => {
-    response.send([{ id: 123, name: 'chicken breast', price: 12.99 }])
 })
 
 app.listen(PORT, () => {

@@ -7,7 +7,7 @@ const username = document.getElementById('username')
 const email = document.getElementById('email')
 const password = document.getElementById('password')
 const password2 = document.getElementById('password2')
-form.addEventListener('submit', function (event) {
+form.addEventListener('submit', async function (event) {
     event.preventDefault()
     let emailCheck = false
     let passwordCheck = false
@@ -38,9 +38,26 @@ form.addEventListener('submit', function (event) {
 
     if (emailCheck && passwordCheck && fieldsCheck) {
         resultDiv.textContent = `Registration successful! Your nickname: ${username.value}, email: ${email.value}`;
+        try {
+            const response = await fetch('http://localhost:3000/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username:username.value,
+                    email: email.value,
+                    password: password.value
+                })
+            })
+            if (!response.ok) throw new Error("Server error")
+            const data = await response.json()
+            console.log('User saved:', data)
+        } catch (error) {
+            console.log("Error saving user: ", error)
+            resultDiv.textContent = 'Something went wrong. Try again.'
+        }
     } else {
         resultDiv.textContent = ''
     }
 })
-
-//hui
