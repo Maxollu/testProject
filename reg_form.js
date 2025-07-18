@@ -1,4 +1,7 @@
 const form = document.getElementById('registerForm')
+const searchForm = document.getElementById('searchForm')
+const searchUsername = document.getElementById('searchUsername')
+const searchDiv = document.getElementById('searchResult')
 const resultDiv = document.getElementById('result')
 const emailError = document.getElementById('emailError')
 const passwordError = document.getElementById('passwordError')
@@ -7,6 +10,33 @@ const username = document.getElementById('username')
 const email = document.getElementById('email')
 const password = document.getElementById('password')
 const password2 = document.getElementById('password2')
+async function fetchData() {
+    const response = await fetch('http://localhost:3000/api/users'); // Await the fetch call
+    const data = await response.json(); // Await the parsing of the JSON data
+    console.log(data);
+}
+
+async function postUser(username) {
+    const response = await fetch('http://localhost:3000/api/users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            email: email.value,
+            password: password.value
+        })
+    })
+    const data = await response.json()
+    console.log('User saved:', data)
+    return data
+}
+searchForm.addEventListener('submit', async function(event) {
+    event.preventDefault()
+    const searchUser = await postUser(searchUsername.value)
+    searchDiv.textContent = `Username: ${searchUser.username} exist with ID: ${searchUser.id}`
+})
 form.addEventListener('submit', async function (event) {
     event.preventDefault()
     let emailCheck = false
@@ -38,25 +68,8 @@ form.addEventListener('submit', async function (event) {
 
     if (emailCheck && passwordCheck && fieldsCheck) {
         resultDiv.textContent = `Registration successful! Your nickname: ${username.value}, email: ${email.value}`;
-        try {
-            const response = await fetch('http://localhost:3000/api/users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username:username.value,
-                    email: email.value,
-                    password: password.value
-                })
-            })
-            if (!response.ok) throw new Error("Server error")
-            const data = await response.json()
-            console.log('User saved:', data)
-        } catch (error) {
-            console.log("Error saving user: ", error)
-            resultDiv.textContent = 'Something went wrong. Try again.'
-        }
+        console.log(username.value)
+        await postUser(username.value);
     } else {
         resultDiv.textContent = ''
     }
