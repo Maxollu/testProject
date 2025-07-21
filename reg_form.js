@@ -1,4 +1,4 @@
-const form = document.getElementById('registerForm')
+const createForm = document.getElementById('registerForm')
 const searchForm = document.getElementById('searchForm')
 const searchUsername = document.getElementById('searchUsername')
 const searchDiv = document.getElementById('searchResult')
@@ -16,7 +16,7 @@ async function fetchData() {
     console.log(data);
 }
 
-async function postUser(username) {
+async function createUser(username) {
     const response = await fetch('http://localhost:3000/api/users', {
         method: 'POST',
         headers: {
@@ -28,16 +28,41 @@ async function postUser(username) {
             password: password.value
         })
     })
+
     const data = await response.json()
-    console.log('User saved:', data)
+
+    if(!response.ok) {
+        throw new Error(data.msg || "Unknown error")
+    }
+
     return data
 }
+
+async function searchUser(username){
+    const response = await fetch('http://localhost:3000/api/users/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username
+        })
+    })
+    const data = await response.json()
+    return {ok: response.ok, data}
+}
+
 searchForm.addEventListener('submit', async function(event) {
     event.preventDefault()
-    const searchUser = await postUser(searchUsername.value)
-    searchDiv.textContent = `Username: ${searchUser.username} exist with ID: ${searchUser.id}`
+    const { ok, data } = await searchUser(searchUsername.value)
+
+    if (ok) {
+        searchDiv.textContent = `Username: ${data.username} exists with ID: ${data.id}`
+    } else {
+        searchDiv.textContent = `Error: ${data.msg || 'Unknown error'}`
+    }
 })
-form.addEventListener('submit', async function (event) {
+createForm.addEventListener('submit', async function (event) {
     event.preventDefault()
     let emailCheck = false
     let passwordCheck = false
@@ -67,9 +92,12 @@ form.addEventListener('submit', async function (event) {
     }
 
     if (emailCheck && passwordCheck && fieldsCheck) {
-        resultDiv.textContent = `Registration successful! Your nickname: ${username.value}, email: ${email.value}`;
-        console.log(username.value)
-        await postUser(username.value);
+        try {
+            const newUser = await createUser(username.value)
+            resultDiv.textContent = `Registration successful! Your nickname: ${username.value}, email: ${email.value}`;
+        } catch (error) {
+            resultDiv.textContent = `Error: ${error.message}`
+        }
     } else {
         resultDiv.textContent = ''
     }

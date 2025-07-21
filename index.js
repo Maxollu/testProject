@@ -9,9 +9,9 @@ app.use(express.json())
 const PORT = process.env.PORT || 3000
 
 let mockUsers = [
-    {id: 1, username: "maxollu", displayName: "Maxollu"},
-    {id: 2, username: "lirika", displayName: "LiRiKa"},
-    {id: 3, username: "sl1kers", displayName: "Sl1kers"},
+    {id: 1, username: "Max", email: "maximus73@gmail.com"},
+    {id: 2, username: "Dmytro", email: "dmytro54@gmail.com"},
+    {id: 3, username: "Nikitos", email: "nikitka228@gmail.com"},
 ]
 
 app.get("/", (request, response) => {
@@ -29,26 +29,39 @@ app.get("/api/users", (request, response) => {
 
 app.post('/api/users', (request, response) => {
     const {username, email, password } = request.body
-    console.log(username)
-    const user = mockUsers.find(item => item.username === username)
-    if(user !== undefined) {
-        console.log(user, username)
-        return response.status(200).send(user)
-    }
     if (!username || !email || !password) {
         return response.status(400).send({msg: 'Missing required fields' })
+    }
+
+    const existingUsername = mockUsers.find(item => item.username === username);
+    const existingEmail = mockUsers.find(item => item.email === email);
+    if (existingUsername) {
+        return response.status(409).send({ msg: 'User already exists with this username.' });
+    } else if (existingEmail) {
+        return response.status(409).send({msg:'User already exist with this email.'})
     }
 
     const newUser = {
         id: mockUsers.length + 1,
         username,
-        displayName: username
+        email: email
     }
 
     mockUsers.push(newUser)
 
     console.log('New user added: ', newUser)
     return response.status(200).send(newUser)
+})
+
+app.post('/api/users/search', (request, response) => {
+    const {username} = request.body
+    const user = mockUsers.find(item => item.username === username)
+    if(user !== undefined) {
+        console.log(user)
+        return response.status(200).send(user)
+    } else {
+        return response.status(404).send({ msg: "User not found" })
+    }
 })
 
 app.get('/api/users/:id', (request, response) => {
