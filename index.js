@@ -38,7 +38,7 @@ app.post('/api/users', (request, response) => {
     if (existingUsername) {
         return response.status(409).send({ msg: 'User already exists with this username.' });
     } else if (existingEmail) {
-        return response.status(409).send({msg:'User already exist with this email.'})
+        return response.status(409).send({ msg:'User already exist with this email.'})
     }
 
     const newUser = {
@@ -62,6 +62,24 @@ app.post('/api/users/search', (request, response) => {
     } else {
         return response.status(404).send({ msg: "User not found" })
     }
+})
+
+app.put('/api/users/:id', (request, response) =>{
+    const {id} = request.params;
+    const {username, email} = request.body;
+
+    const user = mockUsers.find(user => user.id == id);
+    if(user) {
+        user.username = username;
+        user.email = email
+        response.status(200).send(user)
+    } else {
+        response.status(404).send({ msg: "User not found" })
+    }
+})
+
+app.get('/api/users/table', (request, response) => {
+    return response.status(200).send({users: mockUsers});
 })
 
 app.get('/api/users/:id', (request, response) => {
