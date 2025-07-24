@@ -40,6 +40,7 @@ async function createUser(username) {
     return data;
 }
 
+
 async function searchUser(username){
     const response = await fetch('http://localhost:3000/api/users/search', {
         method: 'POST',
@@ -62,77 +63,108 @@ async function usersTable() {
     return {ok: response.ok, data};
 }
 
-function updateTable() {
-    tableUl.textContent = '';
-    usersTable().then(response => {
-        console.log(response.data);
-        response.data.users.map(item => {
-            console.log(item);
+function createUserListItem(item) {
+    const li = document.createElement('li');
+    li.style.marginBottom = '20px';
 
-            const user = document.createElement('li');
-            user.textContent = `Username: ${item.username}. Email: ${item.email}. ID: ${item.id}.`;
-            tableUl.appendChild(user);
+    const userInfo = document.createElement('p');
+    userInfo.textContent = `Username: ${item.username}. Email: ${item.email}. ID: ${item.id}.`;
+    li.appendChild(userInfo);
 
-            const dialog = document.createElement('dialog');
-            tableUl.appendChild(dialog);
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Редагувати';
+    li.appendChild(editButton);
 
-            const updateUser = document.createElement('button');
-            updateUser.textContent = 'Редагувати';
-            tableUl.appendChild(updateUser);
-            updateUser.addEventListener('click', () => {
+    const dialog = document.createElement('dialog');
 
-                dialog.showModal();
-            })
+    const message = document.createElement('p');
+    message.textContent = 'Тут редагуємо юзера';
 
-            const submitUpdate = document.createElement('button');
-            submitUpdate.textContent = 'Змінити';
+    const usernameLabel = document.createElement('label');
+    usernameLabel.textContent = 'Змінити username: ';
 
-            const message = document.createElement('p');
-            message.textContent = 'Тут редагуємо юзера';
+    const usernameInput = document.createElement('input');
+    usernameInput.value = item.username;
 
-            const usernameLabel = document.createElement('label');
-            usernameLabel.textContent = 'Змінити username: ';
+    const emailLabel = document.createElement('label');
+    emailLabel.textContent = 'Змінити email: ';
 
-            const usernameUpdate = document.createElement('input');
-            usernameUpdate.value = item.username
+    const emailInput = document.createElement('input');
+    emailInput.value = item.email;
 
-            const emailLabel = document.createElement('label');
-            emailLabel.textContent = 'Змінити email: ';
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Змінити';
 
-            const emailUpdate = document.createElement('input');
-            emailUpdate.value = item.email
-            dialog.appendChild(message);
-            dialog.appendChild(usernameLabel);
-            dialog.appendChild(usernameUpdate);
-            dialog.appendChild(emailLabel);
-            dialog.appendChild(emailUpdate);
-            dialog.appendChild(submitUpdate);
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Закрити';
+    closeButton.style.marginLeft = '10px';
 
-            submitUpdate.addEventListener('click', async() => {
-                const newUsername = usernameUpdate.value;
-                const newEmail = emailUpdate.value;
+    dialog.appendChild(message);
+    dialog.appendChild(usernameLabel);
+    dialog.appendChild(usernameInput);
+    dialog.appendChild(document.createElement('br'));
 
-                if (!newEmail.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)) {
-                    alert("Email некоректний");
-                    return; // зупиняємо виконання, якщо email невалідний
-                }
-                const response = await fetch(`http://localhost:3000/api/users/${item.id}`,  {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({username: newUsername, email: newEmail})
-                })
+    dialog.appendChild(emailLabel);
+    dialog.appendChild(emailInput);
+    dialog.appendChild(document.createElement('br'));
 
-                if (response.ok) {
-                    dialog.close()
-                    updateTable()
-                } else {
-                    console.error("Щось не так")
-                }
-            })
-        });
+    dialog.appendChild(submitButton);
+    dialog.appendChild(closeButton);
+
+    editButton.addEventListener('click', () => {
+        dialog.showModal();
     });
+
+    closeButton.addEventListener('click', () => {
+        dialog.close();
+    });
+
+    submitButton.addEventListener('click', async () => {
+        const newUsername = usernameInput.value.trim();
+        const newEmail = emailInput.value.trim();
+
+        if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(newEmail)) {
+            alert("Email некоректний");
+            return;
+        }
+
+        const response = await fetch(`http://localhost:3000/api/users/${item.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: newUsername, email: newEmail })
+        });
+
+        if (response.ok) {
+            dialog.close();
+            updateTable();
+        } else {
+            alert('Помилка при оновлені користувача.');
+        }
+    });
+
+    li.appendChild(dialog);
+    return li;
+}
+
+async function updateTable() {
+    tableUl.innerHTML = '';
+
+    try{
+        const response = await usersTable();
+        if (!response.ok) {
+            tableUl.textContent = 'Помилка отримання користувача.';
+            return;
+        }
+        response.data.users.forEach(user => {
+            const li = createUserListItem(user);
+            tableUl.appendChild(li);
+        });
+    } catch (error) {
+        console.error(error);
+        tableUl.textContent = 'Сталася помилка при завантаженні користувачів.'
+    }
 }
 
 updateTable();
@@ -180,6 +212,7 @@ createForm.addEventListener('submit', async function (event) {
         try {
             const newUser = await createUser(username.value);
             resultDiv.textContent = `Registration successful! Your nickname: ${username.value}, email: ${email.value}`;
+            createForm.reset();
             updateTable();
         } catch (error) {
             resultDiv.textContent = `Error: ${error.message}`;
