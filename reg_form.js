@@ -67,8 +67,14 @@ function createUserListItem(item) {
     const li = document.createElement('li');
     li.style.marginBottom = '20px';
 
-    const userInfo = document.createElement('p');
-    userInfo.textContent = `Username: ${item.username}. Email: ${item.email}. ID: ${item.id}.`;
+    const userInfo = document.createElement('div');
+    userInfo.classList.add('user-info');
+    userInfo.innerHTML = `
+    <p><strong>Username:</strong> <span class="user-username">${item.username}</span></p>
+    <p><strong>Email:</strong> <span class="user-email">${item.email}</span></p>
+    <p><strong>ID:</strong> <span class="user-id">${item.id}</span></p>
+    `;
+
     li.appendChild(userInfo);
 
     const editButton = document.createElement('button');
@@ -77,8 +83,8 @@ function createUserListItem(item) {
 
     const dialog = document.createElement('dialog');
 
-    const message = document.createElement('p');
-    message.textContent = 'Тут редагуємо юзера';
+    const title = document.createElement('h3');
+    title.textContent = 'Редагування користувача';
 
     const usernameLabel = document.createElement('label');
     usernameLabel.textContent = 'Змінити username: ';
@@ -99,7 +105,7 @@ function createUserListItem(item) {
     closeButton.textContent = 'Закрити';
     closeButton.style.marginLeft = '10px';
 
-    dialog.appendChild(message);
+    dialog.appendChild(title);
     dialog.appendChild(usernameLabel);
     dialog.appendChild(usernameInput);
     dialog.appendChild(document.createElement('br'));
@@ -173,10 +179,15 @@ searchForm.addEventListener('submit', async function(event) {
     event.preventDefault();
     const { ok, data } = await searchUser(searchUsername.value);
 
+    searchDiv.textContent = '';
+    searchDiv.className = '';
+
     if (ok) {
         searchDiv.textContent = `Username: ${data.username} exists with ID: ${data.id} and Email: ${data.email}`;
+        searchDiv.classList.add('search-success')
     } else {
         searchDiv.textContent = `Error: ${data.msg || 'Unknown error'}`;
+        searchDiv.classList.add('search-error')
     }
 })
 createForm.addEventListener('submit', async function (event) {
