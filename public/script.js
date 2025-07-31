@@ -72,6 +72,7 @@ async function usersTable() {
 function createUserListItem(item) {
     const li = document.createElement('li');
     li.style.marginBottom = '20px';
+    const role = localStorage.getItem('role');
 
     const userInfo = document.createElement('div');
     userInfo.classList.add('user-info');
@@ -85,7 +86,11 @@ function createUserListItem(item) {
 
     const editButton = document.createElement('button');
     editButton.textContent = 'Редагувати';
-    li.appendChild(editButton);
+
+    if(role === 'admin'){
+        li.appendChild(editButton);
+
+    }
 
     const dialog = document.createElement('dialog');
 
@@ -126,11 +131,13 @@ function createUserListItem(item) {
 
     dialog.appendChild(submitButton);
     dialog.appendChild(closeButton);
-    dialog.appendChild(deleteButton);
 
-    editButton.addEventListener('click', () => {
-        dialog.showModal();
-    });
+    if(role === 'admin') {
+        dialog.appendChild(deleteButton);
+        editButton.addEventListener('click', () => {
+            dialog.showModal();
+        });
+    }
 
     closeButton.addEventListener('click', () => {
         dialog.close();
@@ -141,7 +148,6 @@ function createUserListItem(item) {
             const response = await fetch(`http://localhost:3000/api/users/${item.id}`, {
                 method: 'DELETE'
             })
-
             const data = await response.json();
 
             if (!response.ok) {
@@ -158,6 +164,7 @@ function createUserListItem(item) {
     submitButton.addEventListener('click', async () => {
         const newUsername = usernameInput.value.trim();
         const newEmail = emailInput.value.trim();
+
 
         if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(newEmail)) {
             alert("Email некоректний");
@@ -226,27 +233,3 @@ searchForm.addEventListener('submit', async function(event) {
         searchDiv.classList.add('search-error')
     }
 })
-
-// const email = document.getElementById('email');
-// const password = document.getElementById('password');
-// async function createUser(username) {
-//     const response = await fetch('http://localhost:3000/api/users', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             username: username,
-//             email: email.value,
-//             password: password.value
-//         })
-//     })
-//
-//     const data = await response.json();
-//
-//     if(!response.ok) {
-//         throw new Error(data.msg || "Unknown error")
-//     }
-//
-//     return data;
-// }

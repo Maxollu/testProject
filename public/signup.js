@@ -1,7 +1,6 @@
 const authForm = document.getElementById('authForm');
 const formTitle = document.getElementById('formTitle');
 const toggleText = document.getElementById('toggleText');
-const toggleLink = document.getElementById('toggleLink');
 
 let isLogin = true;
 
@@ -91,9 +90,9 @@ authForm.addEventListener('submit', async function (event) {
             if(!response.ok) {
                 throw new Error(data.msg || "Login error");
             }
+            localStorage.setItem('role', data.user.role)
             localStorage.setItem('authEmail', email.value);
             localStorage.setItem('authPassword', password.value);
-
             window.location.href = 'main.html';
         } catch (error) {
             resultDiv.textContent = `Помилка: ${error.message}`
@@ -142,6 +141,7 @@ authForm.addEventListener('submit', async function (event) {
                 throw new Error(data.msg || 'Signup error');
             }
 
+            localStorage.setItem('role', 'user')
             localStorage.setItem('authEmail', email.value);
             localStorage.setItem('authPassword', password.value);
 
