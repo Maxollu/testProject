@@ -185,6 +185,8 @@ function createUserListItem(item) {
                 })
             });
 
+            const data = await response.json();
+
             if (response.ok) {
                 dialog.close();
                 updateTable();
@@ -195,7 +197,7 @@ function createUserListItem(item) {
                     console.log('LocalStorage оновлено: authEmail');
                 }
             } else {
-                alert('Помилка при оновлені користувача.');
+                alert(data.msg || 'Помилка при оновленні користувача.');
             }
         });
 

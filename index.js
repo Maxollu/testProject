@@ -118,13 +118,25 @@ app.put('/api/users/:id', (req, res) => {
     }
 
     const user = mockUsers.find(user => user.id == id);
-    if (user) {
-        user.username = username;
-        user.email = email;
-        res.status(200).send(user);
-    } else {
-        res.status(404).send({ msg: 'User not found' });
+    if (!user) {
+        return res.status(404).send({ msg: 'User not found' });
     }
+
+    // Перевірка унікальності username та email (крім поточного користувача)
+    const existingUsername = mockUsers.find(u => u.username === username && u.id != id);
+    const existingEmail = mockUsers.find(u => u.email === email && u.id != id);
+
+    if (existingUsername) {
+        return res.status(409).send({ msg: 'User with this username already exists.' });
+    }
+    if (existingEmail) {
+        return res.status(409).send({ msg: 'User with this email already exists.' });
+    }
+
+    // Оновлення даних
+    user.username = username;
+    user.email = email;
+    res.status(200).send(user);
 });
 
 app.get('/api/users/table', (request, response) => {
