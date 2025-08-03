@@ -10,41 +10,10 @@ app.use(express.json())
 const PORT = process.env.PORT || 3000
 
 let mockUsers = [
-    {
-        id: 1,
-        username: "Max",
-        email: "maximus73@gmail.com",
-        password: '123123',
-        role: 'admin',
-    },
-    {
-        id: 2,
-        username: "Dmytro",
-        email: "dmytro54@gmail.com",
-        password: '234234',
-        role: 'user',
-    },
-    {
-        id: 3,
-        username: "Nikitos",
-        email: "nikitka228@gmail.com",
-        password: '345345',
-        role: 'user',
-    },
+    {id: 1, username: "Max", email: "maximus73@gmail.com", password: '123123'},
+    {id: 2, username: "Dmytro", email: "dmytro54@gmail.com", password: '234234'},
+    {id: 3, username: "Nikitos", email: "nikitka228@gmail.com", password: '345345'},
 ]
-
-function checkAdmin (req, res, next) {
-    const { email, password } = req.body;
-    const user = mockUsers.find(
-        (u) => u.email === email && u.password === password
-    )
-
-    if(!user || user.role !== 'admin') {
-        return res.status(403).send({ msg: 'Доступ заборонено' })
-    }
-
-    next();
-}
 
 app.use(express.static('C:/Users/Max/WebstormProjects/untitled/public')); // Or express.static(path.join(dirname, 'public')) if using a public folder
 
@@ -95,8 +64,7 @@ app.post('/signup', (request, response) => {
         id: mockUsers.length + 1,
         username,
         email: email,
-        password: password,
-        role: 'user'
+        password: password
     };
 
     mockUsers.push(newUser);
@@ -116,7 +84,7 @@ app.post('/login', (req, res) => {
         return res.status(401).send({ msg: 'Невірний email або пароль.' });
     }
 
-    console.log(`Entered like user: ${user.username}, with ID: ${user.id} and role: ${user.role}`)
+    console.log(`Entered like user: ${user.username}, with ID: ${user.id}`)
     return res.status(200).send({ msg: 'Успішний вхід', user });
 });
 
@@ -131,7 +99,7 @@ app.post('/api/users/search', (request, response) => {
     }
 })
 
-app.put('/api/users/:id', checkAdmin, (request, response) =>{
+app.put('/api/users/:id', (request, response) =>{
     const {id} = request.params;
     const {username, email} = request.body;
 
@@ -160,7 +128,7 @@ app.get('/api/users/:id', (request, response) => {
     return response.send(findUser)
 })
 
-app.delete('/api/users/:id', checkAdmin, (req, res) => {
+app.delete('/api/users/:id', (req, res) => {
     const userId = parseInt(req.params.id);
     const userIndex = mockUsers.findIndex(user => user.id === userId);
 

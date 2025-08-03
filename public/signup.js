@@ -1,6 +1,7 @@
 const authForm = document.getElementById('authForm');
 const formTitle = document.getElementById('formTitle');
 const toggleText = document.getElementById('toggleText');
+const toggleLink = document.getElementById('toggleLink');
 
 let isLogin = true;
 
@@ -77,12 +78,12 @@ authForm.addEventListener('submit', async function (event) {
 
         try {
             const response = await fetch('http://localhost:3000/login', {
-              method: "POST",
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify( {
-                  email: email.value,
-                  password: password.value
-              })
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( {
+                    email: email.value,
+                    password: password.value
+                })
             });
 
             const data = await response.json();
@@ -90,9 +91,9 @@ authForm.addEventListener('submit', async function (event) {
             if(!response.ok) {
                 throw new Error(data.msg || "Login error");
             }
-            localStorage.setItem('role', data.user.role)
             localStorage.setItem('authEmail', email.value);
             localStorage.setItem('authPassword', password.value);
+
             window.location.href = 'main.html';
         } catch (error) {
             resultDiv.textContent = `Помилка: ${error.message}`
@@ -141,7 +142,6 @@ authForm.addEventListener('submit', async function (event) {
                 throw new Error(data.msg || 'Signup error');
             }
 
-            localStorage.setItem('role', 'user')
             localStorage.setItem('authEmail', email.value);
             localStorage.setItem('authPassword', password.value);
 
