@@ -1,15 +1,14 @@
 const authForm = document.getElementById('authForm');
 const formTitle = document.getElementById('formTitle');
 const toggleText = document.getElementById('toggleText');
-const toggleLink = document.getElementById('toggleLink');
 
 let isLogin = true;
 
 function renderForm() {
     authForm.textContent = '';
 
-    if(isLogin) {
-        formTitle.textContent = 'Login'
+    if (isLogin) {
+        formTitle.textContent = 'Login';
         toggleText.innerHTML = 'Немає аккаунта? <a href="#" id="toggleLink">Зареєструватися</a>';
 
         authForm.innerHTML = `
@@ -70,9 +69,9 @@ authForm.addEventListener('submit', async function (event) {
     emailError.textContent = '';
     passwordError.textContent = '';
 
-    if(isLogin) {
-        if(!email.value || !password.value) {
-            resultDiv.textContent = 'All fields are required.'
+    if (isLogin) {
+        if (!email.value || !password.value) {
+            resultDiv.textContent = 'All fields are required.';
             return;
         }
 
@@ -80,7 +79,7 @@ authForm.addEventListener('submit', async function (event) {
             const response = await fetch('http://localhost:3000/login', {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify( {
+                body: JSON.stringify({
                     email: email.value,
                     password: password.value
                 })
@@ -88,17 +87,18 @@ authForm.addEventListener('submit', async function (event) {
 
             const data = await response.json();
 
-            if(!response.ok) {
+            if (!response.ok) {
                 throw new Error(data.msg || "Login error");
             }
+
             localStorage.setItem('authEmail', email.value);
             localStorage.setItem('authPassword', password.value);
+            localStorage.setItem('authRole', data.user.role); // Зберігаємо роль
 
             window.location.href = 'main.html';
         } catch (error) {
-            resultDiv.textContent = `Помилка: ${error.message}`
+            resultDiv.textContent = `Помилка: ${error.message}`;
         }
-
     } else {
         const username = document.getElementById('username');
         const password2 = document.getElementById('password2');
@@ -144,6 +144,7 @@ authForm.addEventListener('submit', async function (event) {
 
             localStorage.setItem('authEmail', email.value);
             localStorage.setItem('authPassword', password.value);
+            localStorage.setItem('authRole', data.role); // Зберігаємо роль
 
             window.location.href = 'main.html';
         } catch (error) {
