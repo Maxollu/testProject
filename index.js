@@ -21,7 +21,7 @@ let mockUsers = [
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/signup', (req, res) => {
-    res.sendFile(path.join('C:/Users/Max/WebstormProjects/untitled/public', 'signup.html'));
+    res.sendFile(path.join(__dirname, 'public', 'main.html'));
 });
 
 app.post('/main', (req, res) => {
@@ -29,14 +29,14 @@ app.post('/main', (req, res) => {
     const existingUsername = mockUsers.find(item => item.username === username);
     const existingPassword = mockUsers.find(item => item.password === password);
     if (existingUsername && existingPassword) {
-        res.sendFile(path.join('C:/Users/Max/WebstormProjects/untitled/public', 'main.html'));
+        res.sendFile(path.join(__dirname, 'public', 'main.html'));
     } else {
-        res.sendFile(path.join('C:/Users/Max/WebstormProjects/untitled/public', 'signup.html'));
+        res.sendFile(path.join(__dirname, 'public', 'signup.html'));
     }
 });
 
 app.get("/", (request, response) => {
-    response.status(201).send({ msg: "Hello!" });
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
 app.get("/api/users", (request, response) => {
