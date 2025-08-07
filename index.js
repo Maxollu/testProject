@@ -1,6 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -14,7 +18,7 @@ let mockUsers = [
     { id: 3, username: "Nikitos", email: "nikitka228@gmail.com", password: '345345', role: 'user' },
 ];
 
-app.use(express.static('C:/Users/Max/WebstormProjects/untitled/public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/signup', (req, res) => {
     res.sendFile(path.join('C:/Users/Max/WebstormProjects/untitled/public', 'signup.html'));
