@@ -36,7 +36,7 @@ app.post('/main', (req, res) => {
 });
 
 app.get("/", (request, response) => {
-    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+    response.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
 app.get("/api/users", (request, response) => {
