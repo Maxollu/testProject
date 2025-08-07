@@ -16,7 +16,7 @@ const tableUl = document.getElementById('usersTable');
 
     // Перевіряємо авторизацію на сервері
     try {
-        const response = await fetch('http://localhost:3000/login', {
+        const response = await fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -45,13 +45,13 @@ function logout() {
 }
 
 async function fetchData() {
-    const response = await fetch('http://localhost:3000/api/users');
+    const response = await fetch('/api/users');
     const data = await response.json();
     console.log(data);
 }
 
 async function searchUser(username) {
-    const response = await fetch('http://localhost:3000/api/users/search', {
+    const response = await fetch('/api/users/search', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ async function searchUser(username) {
 }
 
 async function usersTable() {
-    const response = await fetch('http://localhost:3000/api/users/table', {
+    const response = await fetch('/api/users/table', {
         method: 'GET'
     });
     const data = await response.json();
@@ -142,7 +142,7 @@ function createUserListItem(item) {
         deleteButton.addEventListener('click', async () => {
             try {
                 const authEmail = localStorage.getItem('authEmail');
-                const response = await fetch(`http://localhost:3000/api/users/${item.id}`, {
+                const response = await fetch(`/api/users/${item.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
@@ -173,7 +173,7 @@ function createUserListItem(item) {
                 return;
             }
 
-            const response = await fetch(`http://localhost:3000/api/users/${item.id}`, {
+            const response = await fetch(`/api/users/${item.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
